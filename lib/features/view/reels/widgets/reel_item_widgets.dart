@@ -1,34 +1,91 @@
 part of 'reel_item.dart';
 
 class VideoSlider extends StatelessWidget {
-  final void Function(double)? onChanged;
+  final void Function(double)? onChanged, onChangeStart, onChangeEnd;
   final double value;
+  final bool loading, paused;
   const VideoSlider({
     super.key,
     this.onChanged,
     required this.value,
+    this.onChangeStart,
+    this.onChangeEnd,
+    required this.loading,
+    required this.paused,
   });
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 4.0),
-      child: Theme(
-        data: ThemeData(
-          sliderTheme: SliderThemeData(
-            thumbShape: SliderComponentShape.noThumb,
-            activeTrackColor: Colors.white,
-            inactiveTrackColor: Colors.white54,
-            trackHeight: 4,
-            trackShape: CustomTrackShape(),
-            valueIndicatorShape: const DropSliderValueIndicatorShape(),
-          ),
+    return loading
+        ? Container(
+            margin: const EdgeInsets.symmetric(vertical: 21.0, horizontal: 4.0),
+            height: 6,
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(4.0),
+            ),
+            child: const LinearProgressIndicator(
+              color: Colors.white,
+              backgroundColor: Colors.white54,
+            ),
+          )
+        : Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 4.0),
+            child: Theme(
+              data: ThemeData(
+                sliderTheme: SliderThemeData(
+                  thumbShape: paused
+                      ? const RoundSliderThumbShape(enabledThumbRadius: 6)
+                      : const RoundSliderThumbShape(
+                          enabledThumbRadius: 3,
+                          elevation: 0,
+                        ),
+                  activeTrackColor: Colors.white,
+                  inactiveTrackColor: Colors.white54,
+                  thumbColor: Colors.white,
+                  trackHeight: 4,
+                  trackShape: CustomTrackShape(),
+                  valueIndicatorShape: const DropSliderValueIndicatorShape(),
+                ),
+              ),
+              child: Slider(
+                min: 0,
+                max: 1,
+                value: value,
+                onChanged: onChanged,
+                onChangeStart: onChangeStart,
+                onChangeEnd: onChangeEnd,
+              ),
+            ),
+          );
+  }
+}
+
+class ReelInfoTile extends StatelessWidget {
+  const ReelInfoTile({
+    super.key,
+    required this.index,
+  });
+
+  final int index;
+
+  @override
+  Widget build(BuildContext context) {
+    return ListTile(
+      title: Text(
+        'Title $index',
+        style: const TextStyle(
+          color: Colors.white,
+          fontSize: 20,
+          fontWeight: FontWeight.bold,
         ),
-        child: Slider(
-          min: 0,
-          max: 1,
-          value: value,
-          onChanged: onChanged,
+      ),
+      subtitle: Text(
+        'Description $index' * 4,
+        maxLines: 1,
+        overflow: TextOverflow.ellipsis,
+        style: const TextStyle(
+          color: Colors.white,
         ),
       ),
     );
@@ -43,10 +100,21 @@ class SoundTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: const Text('Music name'),
+      minTileHeight: 32,
+      title: TextScroll(
+        'Music name' * 4,
+        mode: TextScrollMode.endless,
+        velocity: const Velocity(pixelsPerSecond: Offset(40, 0)),
+        delayBefore: const Duration(milliseconds: 500),
+        pauseBetween: const Duration(milliseconds: 500),
+        fadedBorder: true,
+        fadeBorderVisibility: FadeBorderVisibility.auto,
+        style: const TextStyle(color: Colors.white),
+      ),
       leading: Container(
-        width: 40,
-        height: 40,
+        width: 38,
+        height: 38,
+        padding: const EdgeInsets.all(6),
         decoration: BoxDecoration(
           color: Colors.black,
           border: Border.all(
@@ -55,9 +123,11 @@ class SoundTile extends StatelessWidget {
           ),
           borderRadius: BorderRadius.circular(12),
         ),
-        child: const Icon(
-          HugeIcons.strokeRoundedMusicNote03,
-          color: Colors.white,
+        child: const FittedBox(
+          child: Icon(
+            HugeIcons.strokeRoundedMusicNote03,
+            color: Colors.white,
+          ),
         ),
       ),
     );
@@ -92,6 +162,7 @@ class IconBar extends StatelessWidget {
               ),
               child: const CircleAvatar(
                 backgroundColor: Colors.black,
+                child: Icon(HugeIcons.strokeRoundedUser, color: Colors.white),
               ),
             ),
           ),
@@ -99,10 +170,14 @@ class IconBar extends StatelessWidget {
           IconButton(
             onPressed: () {},
             icon: const Icon(
-              HugeIcons.strokeRoundedThumbsUp,
+              HugeIcons.strokeRoundedFavourite,
               color: Colors.white,
               size: 32,
             ),
+          ),
+          const Text(
+            'Likes',
+            style: TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 8),
           IconButton(
@@ -113,6 +188,10 @@ class IconBar extends StatelessWidget {
               size: 32,
             ),
           ),
+          const Text(
+            'Comments',
+            style: TextStyle(color: Colors.white),
+          ),
           const SizedBox(height: 8),
           IconButton(
             onPressed: () {},
@@ -122,6 +201,10 @@ class IconBar extends StatelessWidget {
               size: 32,
             ),
           ),
+          const Text(
+            'Shares',
+            style: TextStyle(color: Colors.white),
+          ),
           const SizedBox(height: 8),
           IconButton(
             onPressed: () {},
@@ -130,6 +213,10 @@ class IconBar extends StatelessWidget {
               color: Colors.white,
               size: 32,
             ),
+          ),
+          const Text(
+            'Save',
+            style: TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 8),
           IconButton(

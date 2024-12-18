@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:reelzaty/features/view/reels/widgets/reel_profile_item.dart';
 import 'package:reelzaty/features/view/reels/widgets/reel_item.dart';
 
@@ -11,6 +12,20 @@ class ReelsScreen extends StatefulWidget {
 
 class _ReelsScreenState extends State<ReelsScreen> {
   final ValueNotifier<int> _index = ValueNotifier(0);
+
+  @override
+  void initState() {
+    SystemChrome.setPreferredOrientations(
+        [DeviceOrientation.portraitUp, DeviceOrientation.portraitDown]);
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    SystemChrome.setPreferredOrientations(DeviceOrientation.values);
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return PageView(
@@ -30,6 +45,7 @@ class _ReelsScreenState extends State<ReelsScreen> {
             backgroundColor: Colors.transparent,
           ),
           body: RefreshIndicator.adaptive(
+            displacement: 100,
             onRefresh: () {
               return Future.delayed(const Duration(seconds: 1));
             },
@@ -37,7 +53,9 @@ class _ReelsScreenState extends State<ReelsScreen> {
               key: const PageStorageKey<String>('reels'),
               physics: const CustomPageViewScrollPhysics(),
               allowImplicitScrolling: true,
-              itemBuilder: (context, index) => const ReelItem(),
+              itemBuilder: (context, index) => ReelItem(
+                index: index,
+              ),
               itemCount: 10,
               scrollDirection: Axis.vertical,
               onPageChanged: (index) => _index.value = index,
