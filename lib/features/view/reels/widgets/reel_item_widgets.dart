@@ -65,23 +65,25 @@ class ReelInfoTile extends StatelessWidget {
   const ReelInfoTile({
     super.key,
     required this.index,
+    required this.reel,
   });
 
   final int index;
+  final Reel reel;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
       title: Text(
-        'Title $index',
+        reel.title,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: 20,
+          fontSize: 16,
           fontWeight: FontWeight.bold,
         ),
       ),
       subtitle: Text(
-        'Description $index' * 4,
+        reel.description,
         maxLines: 1,
         overflow: TextOverflow.ellipsis,
         style: const TextStyle(
@@ -93,8 +95,10 @@ class ReelInfoTile extends StatelessWidget {
 }
 
 class SoundTile extends StatelessWidget {
+  final Reel reel;
   const SoundTile({
     super.key,
+    required this.reel,
   });
 
   @override
@@ -135,8 +139,10 @@ class SoundTile extends StatelessWidget {
 }
 
 class IconBar extends StatelessWidget {
+  final Reel reel;
   const IconBar({
     super.key,
+    required this.reel,
   });
 
   @override
@@ -175,22 +181,27 @@ class IconBar extends StatelessWidget {
               size: 32,
             ),
           ),
-          const Text(
-            'Likes',
-            style: TextStyle(color: Colors.white),
+          Text(
+            reel.likes > 0 && reel.likesShown ? '${reel.likes}' : 'Likes',
+            style: const TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 8),
           IconButton(
-            onPressed: () {},
-            icon: const Icon(
+            onPressed: reel.commentsDisabled ? null : () {},
+            icon: Icon(
               HugeIcons.strokeRoundedComment01,
-              color: Colors.white,
+              color: reel.commentsDisabled ? Colors.grey : Colors.white,
               size: 32,
             ),
           ),
-          const Text(
-            'Comments',
-            style: TextStyle(color: Colors.white),
+          Text(
+            reel.commentsDisabled
+                ? 'Disabled'
+                : reel.comments > 0 && reel.commentsShown
+                    ? '${reel.comments}'
+                    : 'Comments',
+            style: TextStyle(
+                color: reel.commentsDisabled ? Colors.grey : Colors.white),
           ),
           const SizedBox(height: 8),
           IconButton(
@@ -201,9 +212,9 @@ class IconBar extends StatelessWidget {
               size: 32,
             ),
           ),
-          const Text(
-            'Shares',
-            style: TextStyle(color: Colors.white),
+          Text(
+            reel.shares > 0 && reel.sharesShown ? '${reel.shares}' : 'Shares',
+            style: const TextStyle(color: Colors.white),
           ),
           const SizedBox(height: 8),
           IconButton(
